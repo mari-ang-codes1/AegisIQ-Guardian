@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AegisIQ: Advanced Cognitive Social Engineering Shield
 
 AegisIQ is an enterprise-grade automated SecOps agent designed to mitigate the "human element" in cybersecurity. By utilizing **Microsoft Foundry IQ** for grounding and **Phi-4** for multi-step cognitive reasoning, AegisIQ intercepts and audits communication vectors to detect psychological manipulation and sophisticated social engineering tactics.
@@ -23,3 +24,7 @@ The human link is the most exploited vulnerability in the security chain. 95% of
 ---
 **Author**: AegisIQ Development Team (Hackathon Edition)
 **Disclaimer**: This solution is a prototype developed for the Microsoft Agents League Hackathon.
+=======
+# AegisIQ-Guardian
+Enterprise-grade Reasoning Agent for real-time phishing and social engineering defense. Built with Phi-4 and Foundry IQ.
+>>>>>>> 378f71e11fd1d1bd4148f58fd711de9a028065c4
