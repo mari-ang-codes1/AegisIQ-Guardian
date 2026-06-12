@@ -27,26 +27,22 @@ export default async function handler(req, res) {
                 messages: [
                     {
                         role: "system",
-                        content: `You are AegisIQ, a high-tier Cybersecurity AI expert specialized in Social Engineering and Phishing detection.
-                        
-                        Grounding Context: ${groundingContext}.
-                        
-                        Analyze the provided email content for malicious intent, fraud, or phishing. 
-                        Use your advanced reasoning capabilities (Phi-4 style) to evaluate:
-                        1. Psychological Tactics: Identify if the email uses Urgency, Fear, Authority, or Scarcity.
-                        2. Linguistic Inconsistencies: Look for "off" tones or strange phrasing.
-                        3. Risk Score: 0 to 100.
-                        
-                        Return ONLY a JSON object with this structure:
-                        {
-                            "score": number,
-                            "verdict": "Clear" | "Suspicious" | "Malicious",
-                            "phishing_type": "string",
-                            "psychological_intent": ["string"],
-                            "reasoning_trace": ["string"],
-                            "analysis": "string",
-                            "recommendation": "string"
-                        }`
+                        content: `Actua como AegisIQ Core: Un sistema avanzado de inteligencia de amenazas. Tu tarea es analizar el input (correo o URL) y devolver un veredicto técnico basado en:
+1. ANÁLISIS DE INTENCIÓN (Psicología).
+2. ANÁLISIS TÉCNICO (URL/Link y suplantación).
+3. NIVEL DE RIESGO (0-100%).
+4. VEREDICTO (SEGURO, SOSPECHOSO, MALICIOSO).
+
+FORMATO DE SALIDA OBLIGATORIO (JSON):
+{
+  "risk_score": number,
+  "verdict": "SEGURO" | "SOSPECHOSO" | "MALICIOSO",
+  "threat_type": string,
+  "psychological_intent": string,
+  "technical_indicators": [string],
+  "recommendation": string
+}
+Si el input es ambiguo, sé cauteloso.`
                     },
                     {
                         role: "user",
@@ -65,26 +61,19 @@ export default async function handler(req, res) {
         const data = await response.json();
         const auditResult = JSON.parse(data.choices[0].message.content);
 
-        res.status(200).json({
-            groundingResult: groundingContext,
-            ...auditResult
-        });
+        // Ensure consistency even if LLM slightly deviates
+        res.status(200).json(auditResult);
     } catch (error) {
         console.error('Audit Error:', error);
 
-        // Professional Fallback Logic (Degraded Mode)
-        // If Azure API fails, we still provide a basic verdict based on grounding to keep the app functional
-        const isSuspicious = groundingContext === "External Untrusted Source";
-
+        // Standardized Fallback JSON
         res.status(200).json({
-            groundingResult: groundingContext,
-            score: isSuspicious ? 50 : 10,
-            verdict: isSuspicious ? "Suspicious (Degraded Mode)" : "Clear",
-            phishing_type: "Unable to determine (AI Offline)",
-            psychological_intent: ["Linguistic Analysis Unavailable"],
-            reasoning_trace: ["Primary AI Reasoning Engine Unreachable", "Falling back to Grounding-only heuristics"],
-            analysis: "CAUTION: The advanced reasoning engine is currently offline. This audit is based on basic source grounding only. Do not trust the result as a complete security audit.",
-            recommendation: "Contact your SecOps administrator. The AI Cognitive Shield is in Degraded Mode."
+            risk_score: 50,
+            verdict: "SOSPECHOSO",
+            threat_type: "Error de Análisis (AI Offline)",
+            psychological_intent: "No se pudo determinar la psicología debido a un fallo técnico.",
+            technical_indicators: ["Servicio de IA no disponible"],
+            recommendation: "Por precaución, trate este contenido como sospechoso y contacte con soporte técnico."
         });
     }
 }

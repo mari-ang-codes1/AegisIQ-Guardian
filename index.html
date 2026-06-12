@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,115 +9,95 @@
     <!-- Lucide icons for professional look -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
     <div class="container">
         <header>
-            <h1>AEGIS<span style="color: #3b82f6;">IQ</span></h1>
-            <p>Advanced Real-Time Social Engineering Interception & Audit System</p>
+            <h1>AEGIS<span style="color: var(--accent-safe);">IQ</span> CORE</h1>
+            <p>Intelligence Threat Analysis System // SOC v4.0</p>
         </header>
 
-        <!-- Metrics Dashboard -->
-        <div class="dashboard-grid">
-            <div class="metric-card">
-                <div class="metric-title">Emails Audited</div>
-                <div class="metric-val" id="metric-total">0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-title">Threats Detected</div>
-                <div class="metric-val" id="metric-blocked" style="color: var(--color-sospechoso);">0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-title">System Average Risk</div>
-                <div class="metric-val" id="metric-avg-risk" style="color: var(--color-alerta);">0%</div>
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div id="search-bar" class="search-wrapper">
+                <input type="text" id="input-field" placeholder="Enter URL or email content for deep analysis..."
+                    autocomplete="off">
+                <button id="scan-btn" class="scan-btn">
+                    <i data-lucide="shield-alert"></i>
+                    SCAN
+                </button>
             </div>
         </div>
 
-        <!-- Audit Input Area -->
-        <section class="audit-section">
-            <h2>Audit Entry Vector (Email Content)</h2>
-            <textarea id="email-content" placeholder="Paste the suspicious email content here for analytical interception..."></textarea>
-            <button id="audit-btn" class="btn-primary">
-                <i data-lucide="shield-check"></i>
-                <span id="btn-text">Audit Email Content</span>
-            </button>
-        </section>
-
-        <!-- Analytical Results -->
-        <section id="results-section" class="results-section hidden">
-            <div class="results-header">
-                <div class="results-header-cell">
-                    <h2>Analytical Incident Report</h2>
+        <!-- SOC Grid -->
+        <div class="dashboard-grid">
+            <!-- Panel 1: Riesgo Cognitivo -->
+            <div class="panel" id="panel-risk">
+                <div class="panel-title">
+                    <i data-lucide="brain"></i>
+                    Riesgo Cognitivo
                 </div>
-                <div class="results-header-cell">
-                    <span id="verdict-badge" class="badge-base">MAXIMUM ALERT</span>
+                <div class="risk-value" id="risk-score">--%</div>
+                <div style="text-align: center; color: var(--text-dim); font-size: 0.8rem;">Score de Amenaza Detectado
                 </div>
             </div>
 
-            <div class="result-grid">
-                <div class="result-item score-container">
-                    <div class="result-label">Psychological Risk Index</div>
-                    <div class="score-big" id="res-score">0%</div>
+            <!-- Panel 2: Verificación Global -->
+            <div class="panel" id="panel-verdict">
+                <div class="panel-title">
+                    <i data-lucide="globe"></i>
+                    Verificación Global
                 </div>
-                <div class="result-item verdict-container">
-                    <div class="result-label">Operational Verdict</div>
-                    <div class="result-value" id="res-verdict">MAXIMUM ALERT</div>
+                <div style="text-align: center;">
+                    <div id="threat-badge" class="threat-badge hidden">--</div>
+                    <div id="threat-type" style="margin-top: 15px; font-weight: bold; color: var(--accent-cobalt);">
+                        ESPERANDO INPUT...</div>
                 </div>
             </div>
 
-            <div class="result-item">
-                <div class="result-label">Identified Attack Vector</div>
-                <div class="result-value highlight" id="res-type">None</div>
+            <!-- Panel 3: Análisis Técnico -->
+            <div class="panel" id="panel-technical">
+                <div class="panel-title">
+                    <i data-lucide="terminal"></i>
+                    Análisis Técnico
+                </div>
+                <ul class="indicator-list" id="indicator-list">
+                    <li style="border: none;">Sistema listo para análisis técnico.</li>
+                </ul>
+                <div id="recommendation-text"
+                    style="margin-top: 20px; font-size: 0.85rem; color: var(--accent-safe); border-top: 1px solid #30363d; padding-top: 10px;">
+                    --
+                </div>
             </div>
 
-            <div class="result-item">
-                <div class="result-label">Psychological Tactics Detected</div>
-                <div id="res-psychological" class="tags-container"></div>
+            <!-- Panel 4: Bitácora de Incidentes -->
+            <div class="panel" id="panel-logs">
+                <div class="panel-title">
+                    <i data-lucide="database"></i>
+                    Bitácora de Incidentes
+                </div>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>FECHA</th>
+                                <th>VEREDICTO</th>
+                                <th>RIESGO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-body">
+                            <!-- Logs will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
-            <div class="result-item">
-                <div class="result-label">Phi-4 Cognitive Reasoning Trace</div>
-                <ul id="res-reasoning" class="reasoning-list"></ul>
-            </div>
-
-            <div class="result-item">
-                <div class="result-label">Forensic Analysis (Powered by Phi-4)</div>
-                <div class="result-value text-justify" id="res-analysis">-</div>
-            </div>
-
-            <div class="result-item">
-                <div class="result-label">Action Plan / Immediate Recommendation</div>
-                <div class="result-value primary-action" id="res-recommendation">-</div>
-            </div>
-        </section>
-
-        <!-- Incident Logs -->
-        <section class="logs-section">
-            <h2>Consolidated Incident Log (Local DB)</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 15%;">Incident ID</th>
-                            <th style="width: 20%;">Date/Time</th>
-                            <th style="width: 35%;">Input Sample</th>
-                            <th style="width: 18%;">Verdict</th>
-                            <th style="width: 12%;">Risk %</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logs-table-body">
-                        <tr>
-                            <td colspan="5" class="text-center-muted">No incidents recorded in the local database.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        </div>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
     </script>
 </body>
+
 </html>

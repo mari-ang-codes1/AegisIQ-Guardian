@@ -1,187 +1,139 @@
 /**
- * AegisIQ - Advanced Social Engineering Interception System
- * Frontend Logic (Enterprise-Grade)
+ * AegisIQ Core - SOC Intelligence Engine
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Local DB if empty
-    if (!localStorage.getItem('aegis_db_logs')) {
-        localStorage.setItem('aegis_db_logs', JSON.stringify([]));
+    // Initialize Local DB
+    if (!localStorage.getItem('aegis_soc_logs')) {
+        localStorage.setItem('aegis_soc_logs', JSON.stringify([]));
     }
 
-    // Initial UI Render
-    updateDashboardMetrics();
-    renderIncidentLogs();
+    renderLogs();
 
-    // Bind Audit Trigger
-    const auditBtn = document.getElementById('audit-btn');
-    if (auditBtn) {
-        auditBtn.addEventListener('click', handleAuditFlow);
+    const scanBtn = document.getElementById('scan-btn');
+    if (scanBtn) {
+        scanBtn.addEventListener('click', handleScan);
     }
+
+    // Allow Enter key to trigger scan
+    document.getElementById('input-field').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleScan();
+    });
 });
 
-/**
- * Main Audit Handler
- * Routes request through Backend Proxy for Security & Grounding
- */
-async function handleAuditFlow() {
-    const emailContent = document.getElementById('email-content').value.trim();
+async function handleScan() {
+    const inputData = document.getElementById('input-field').value.trim();
 
-    if (!emailContent) {
-        alert("🛡️ Input Required: Please paste email content to analyze.");
+    if (!inputData) {
+        alert("🛡️ Input Requerido: Ingrese una URL o contenido sospechoso.");
         return;
     }
 
-    setLoadingState(true);
+    setScanningState(true);
 
     try {
         const response = await fetch('/api/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ emailContent })
+            body: JSON.stringify({ emailContent: inputData })
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Security Proxy Error');
-        }
+        if (!response.ok) throw new Error('Fallo en la comunicación con AegisIQ Core');
 
         const data = await response.json();
 
-        // Save to Local DB
-        saveIncidentToDB(emailContent, data);
+        // Update UI Panels
+        updateUI(data);
 
-        // Update UI
-        displayAuditResults(data);
-        updateDashboardMetrics();
-        renderIncidentLogs();
+        // Persistent Logs
+        saveLog(data);
+        renderLogs();
 
     } catch (error) {
-        console.error('Audit Failure:', error);
-        alert(`❌ Critical Audit Failure: ${error.message}`);
+        console.error('SOC Error:', error);
+        alert(`❌ Error de Sistema: ${error.message}`);
     } finally {
-        setLoadingState(false);
+        setScanningState(false);
     }
 }
 
-/**
- * Persistance Layer
- */
-function saveIncidentToDB(content, result) {
-    const logs = JSON.parse(localStorage.getItem('aegis_db_logs')) || [];
+function setScanningState(isScanning) {
+    const btn = document.getElementById('scan-btn');
+    const searchWrapper = document.getElementById('search-bar');
+    const input = document.getElementById('input-field');
 
-    const newIncident = {
-        id: `AEGIS-${Math.floor(1000 + Math.random() * 9000)}`,
-        date: new Date().toLocaleString(),
-        preview: content.substring(0, 80) + (content.length > 80 ? "..." : ""),
-        score: result.score,
-        verdict: result.verdict,
-        type: result.phishing_type
-    };
-
-    logs.unshift(newIncident);
-    localStorage.setItem('aegis_db_logs', JSON.stringify(logs));
-}
-
-/**
- * UI Rendering Logic
- */
-function displayAuditResults(result) {
-    const resultsSection = document.getElementById('results-section');
-
-    // Score & Verdict
-    document.getElementById('res-score').innerText = `${result.score}%`;
-    document.getElementById('res-verdict').innerText = result.verdict;
-    document.getElementById('res-type').innerText = result.phishing_type;
-    document.getElementById('res-analysis').innerText = result.analysis;
-    document.getElementById('res-recommendation').innerText = result.recommendation;
-
-    // Badges
-    const badge = document.getElementById('verdict-badge');
-    badge.className = 'badge-base';
-    if (result.score >= 70) badge.classList.add('badge-danger');
-    else if (result.score >= 35) badge.classList.add('badge-warning');
-    else badge.classList.add('badge-success');
-
-    // Psychological Metrics
-    const psychContainer = document.getElementById('res-psychological');
-    psychContainer.innerHTML = '';
-    if (result.psychological_intent) {
-        result.psychological_intent.forEach(intent => {
-            const span = document.createElement('span');
-            span.className = 'tag';
-            span.innerText = intent;
-            psychContainer.appendChild(span);
-        });
-    }
-
-    // Reasoning Trace
-    const reasoningList = document.getElementById('res-reasoning');
-    reasoningList.innerHTML = '';
-    if (result.reasoning_trace) {
-        result.reasoning_trace.forEach(step => {
-            const li = document.createElement('li');
-            li.innerText = step;
-            reasoningList.appendChild(li);
-        });
-    }
-
-    resultsSection.classList.remove('hidden');
-    resultsSection.scrollIntoView({ behavior: 'smooth' });
-}
-
-function setLoadingState(isLoading) {
-    const btn = document.getElementById('audit-btn');
-    const btnText = document.getElementById('btn-text');
-
-    if (isLoading) {
+    if (isScanning) {
         btn.disabled = true;
-        btnText.innerText = "Intercepting threats with Phi-4 Cognitive Engine...";
+        btn.innerHTML = '<i data-lucide="loader"></i> ESCANEANDO...';
+        searchWrapper.classList.add('scanning', 'pulse');
+        input.disabled = true;
     } else {
         btn.disabled = false;
-        btnText.innerText = "Audit Email Content";
+        btn.innerHTML = '<i data-lucide="shield-alert"></i> SCAN';
+        searchWrapper.classList.remove('scanning', 'pulse');
+        input.disabled = false;
+        lucide.createIcons();
     }
 }
 
-function updateDashboardMetrics() {
-    const logs = JSON.parse(localStorage.getItem('aegis_db_logs')) || [];
+function updateUI(data) {
+    // 1. Risk Score
+    const riskEl = document.getElementById('risk-score');
+    riskEl.innerText = `${data.risk_score}%`;
+    riskEl.style.color = data.risk_score > 70 ? 'var(--accent-neon-red)' : data.risk_score > 30 ? 'var(--accent-cobalt)' : 'var(--accent-safe)';
 
-    document.getElementById('metric-total').innerText = logs.length;
+    // 2. Global Verdict
+    const badge = document.getElementById('threat-badge');
+    const type = document.getElementById('threat-type');
+    badge.classList.remove('hidden');
+    badge.innerText = data.verdict;
+    badge.style.color = data.risk_score > 70 ? 'var(--accent-neon-red)' : data.risk_score > 30 ? 'var(--accent-cobalt)' : 'var(--accent-safe)';
 
-    const threats = logs.filter(log => log.score >= 35).length;
-    document.getElementById('metric-blocked').innerText = threats;
+    type.innerText = data.threat_type.toUpperCase();
+    type.style.color = 'var(--text-bright)';
 
-    if (logs.length > 0) {
-        const sum = logs.reduce((acc, log) => acc + log.score, 0);
-        document.getElementById('metric-avg-risk').innerText = `${Math.round(sum / logs.length)}%`;
-    } else {
-        document.getElementById('metric-avg-risk').innerText = "0%";
+    // 3. Technical Analysis
+    const list = document.getElementById('indicator-list');
+    list.innerHTML = '';
+
+    // Add Psychological Intent as first indicator
+    const intentLi = document.createElement('li');
+    intentLi.innerHTML = `<strong>INTENCIÓN:</strong> ${data.psychological_intent}`;
+    list.appendChild(intentLi);
+
+    if (data.technical_indicators && data.technical_indicators.length > 0) {
+        data.technical_indicators.forEach(ind => {
+            const li = document.createElement('li');
+            li.innerText = ind;
+            list.appendChild(li);
+        });
     }
+
+    document.getElementById('recommendation-text').innerText = data.recommendation;
 }
 
-function renderIncidentLogs() {
-    const logs = JSON.parse(localStorage.getItem('aegis_db_logs')) || [];
-    const tableBody = document.getElementById('logs-table-body');
+function saveLog(data) {
+    const logs = JSON.parse(localStorage.getItem('aegis_soc_logs')) || [];
+    const newEntry = {
+        date: new Date().toLocaleTimeString(),
+        verdict: data.verdict,
+        score: data.risk_score
+    };
+    logs.unshift(newEntry);
+    if (logs.length > 10) logs.pop(); // Keep last 10
+    localStorage.setItem('aegis_soc_logs', JSON.stringify(logs));
+}
 
-    if (!tableBody) return;
-    tableBody.innerHTML = '';
+function renderLogs() {
+    const logs = JSON.parse(localStorage.getItem('aegis_soc_logs')) || [];
+    const tbody = document.getElementById('logs-body');
+    if (!tbody) return;
 
-    if (logs.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="text-center-muted">No incidents recorded in the local database.</td></tr>`;
-        return;
-    }
-
-    logs.forEach(log => {
-        const row = document.createElement('tr');
-        const statusClass = log.score >= 70 ? 'text-danger' : log.score >= 35 ? 'text-warning' : 'text-success';
-
-        row.innerHTML = `
-            <td><strong>${log.id}</strong></td>
-            <td>${log.date}</td>
-            <td style="color: var(--text-muted); font-style: italic;">"${log.preview}"</td>
-            <td><span class="${statusClass}">● ${log.verdict}</span></td>
-            <td><strong>${log.score}%</strong></td>
-        `;
-        tableBody.appendChild(row);
-    });
+    tbody.innerHTML = logs.map(log => `
+        <tr>
+            <td style="color: var(--text-dim)">${log.date}</td>
+            <td style="color: ${log.score > 70 ? 'var(--accent-neon-red)' : 'var(--accent-cobalt)'}">${log.verdict}</td>
+            <td style="font-weight: 900">${log.score}%</td>
+        </tr>
+    `).join('') || '<tr><td colspan="3" style="text-align:center; color: var(--text-dim)">SIN REGISTROS</td></tr>';
 }
