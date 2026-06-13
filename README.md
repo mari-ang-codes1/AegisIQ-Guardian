@@ -65,6 +65,12 @@ According to the **Microsoft Agents League Judging Criteria**:
 
 ---
 
+**Synthetic Data Statement:** 
+
+All datasets, learner profiles, and activity signals used in this project are 100% synthetic and fabricated for demonstration purposes. No real PII or customer data is used.
+
+---
+
 ## ⚙️ Quick Start
 
 1. **Clone the Repo**
