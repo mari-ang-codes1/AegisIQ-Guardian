@@ -1,26 +1,26 @@
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: "Método no permitido" });
+        return res.status(405).json({ error: "Method not allowed" });
     }
 
     const { emailContent } = req.body;
     if (!emailContent) {
-        return res.status(400).json({ error: "Input vacío" });
+        return res.status(400).json({ error: "Input is empty" });
     }
 
-    // Configuración basada en variables de entorno (Anonimizado)
+    // Configuration based on environment variables (Anonymized)
     const endpoint = process.env.AZURE_ENDPOINT || "https://REPLACE_WITH_YOUR_ENDPOINT.services.ai.azure.com/openai/v1";
     const deploymentName = process.env.AZURE_DEPLOYMENT_ID || "gpt-5.4-nano-2";
     const url = `${endpoint}/chat/completions`;
 
     try {
-        console.log(`Invocando AegisIQ Core via ${deploymentName}...`);
+        console.log(`Invoking AegisIQ Core via ${deploymentName}...`);
 
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.AZURE_API_KEY}` // Ahora usamos Bearer token como el SDK de Python
+                'Authorization': `Bearer ${process.env.AZURE_API_KEY}` // Using Bearer token per Python SDK pattern
             },
             body: JSON.stringify({
                 model: deploymentName,
@@ -49,7 +49,7 @@ recommendation (string - must be in English).`
         const responseText = await response.text();
 
         if (!response.ok) {
-            console.error("Error del Agente Azure AI:", responseText);
+            console.error("Azure Agent Error:", responseText);
             return res.status(response.status).json({
                 error: "AGENT_FAILURE",
                 details: responseText
@@ -58,7 +58,7 @@ recommendation (string - must be in English).`
 
         const data = JSON.parse(responseText);
 
-        // Manejo de la estructura de respuesta (Chat Completion standard)
+        // Handle response structure (Chat Completion standard)
         if (data.choices && data.choices[0] && data.choices[0].message) {
             const content = data.choices[0].message.content;
             const jsonString = content.replace(/```json/g, "").replace(/```/g, "").trim();
@@ -67,16 +67,20 @@ recommendation (string - must be in English).`
                 const auditResult = JSON.parse(jsonString);
                 res.status(200).json(auditResult);
             } catch (e) {
-                console.error("Fallo al parsear JSON del modelo:", jsonString);
+                console.error("Failed to parse model-generated JSON:", jsonString);
                 res.status(500).json({ error: "INVALID_JSON_OUTPUT", content });
             }
         } else {
-            console.error("Respuesta inesperada del Agente:", data);
+            console.error("Unexpected Agent response:", data);
             res.status(500).json({ error: "UNEXPECTED_RESPONSE_FORMAT", data });
         }
 
     } catch (error) {
-        console.error("Fallo crítico en el backend SOC:", error.message);
-        res.status(500).json({ error: "INTERNAL_SERVER_ERROR", details: error.message });
+        console.error("CRITICAL_FAILURE in SOC backend:", error.message);
+        res.status(500).json({
+            error: "CRITICAL_FAILURE",
+            message: error.message,
+            recommendation: "Ensure AZURE_API_KEY is correct and the deployment name matches your Foundry portal."
+        });
     }
 }

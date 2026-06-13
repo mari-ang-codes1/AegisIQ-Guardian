@@ -25,7 +25,7 @@ async function handleScan() {
     const inputData = document.getElementById('input-field').value.trim();
 
     if (!inputData) {
-        alert("🛡️ Input Requerido: Ingrese una URL o contenido sospechoso.");
+        alert("🛡️ Input Required: Please enter a URL or suspicious content.");
         return;
     }
 
@@ -38,7 +38,7 @@ async function handleScan() {
             body: JSON.stringify({ emailContent: inputData })
         });
 
-        if (!response.ok) throw new Error('Fallo en la comunicación con AegisIQ Core');
+        if (!response.ok) throw new Error('Communication failed with AegisIQ Core');
 
         const data = await response.json();
 
@@ -64,7 +64,7 @@ function setScanningState(isScanning) {
 
     if (isScanning) {
         btn.disabled = true;
-        btn.innerHTML = '<i data-lucide="loader"></i> ESCANEANDO...';
+        btn.innerHTML = '<i data-lucide="loader"></i> SCANNING...';
         searchWrapper.classList.add('scanning', 'pulse');
         input.disabled = true;
     } else {
@@ -98,7 +98,7 @@ function updateUI(data) {
 
     // Add Psychological Intent as first indicator
     const intentLi = document.createElement('li');
-    intentLi.innerHTML = `<strong>INTENCIÓN:</strong> ${data.psychological_intent}`;
+    intentLi.innerHTML = `<strong>INTENT:</strong> ${data.psychological_intent}`;
     list.appendChild(intentLi);
 
     if (data.technical_indicators && data.technical_indicators.length > 0) {
@@ -135,5 +135,5 @@ function renderLogs() {
             <td style="color: ${log.score > 70 ? 'var(--accent-neon-red)' : 'var(--accent-cobalt)'}">${log.verdict}</td>
             <td style="font-weight: 900">${log.score}%</td>
         </tr>
-    `).join('') || '<tr><td colspan="3" style="text-align:center; color: var(--text-dim)">SIN REGISTROS</td></tr>';
+    `).join('') || '<tr><td colspan="3" style="text-align:center; color: var(--text-dim)">NO RECORDS FOUND</td></tr>';
 }

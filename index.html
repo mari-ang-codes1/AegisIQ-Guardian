@@ -35,23 +35,22 @@
             <div class="panel" id="panel-risk">
                 <div class="panel-title">
                     <i data-lucide="brain"></i>
-                    Riesgo Cognitivo
+                    Cognitive Risk
                 </div>
                 <div class="risk-value" id="risk-score">--%</div>
-                <div style="text-align: center; color: var(--text-dim); font-size: 0.8rem;">Score de Amenaza Detectado
-                </div>
+                <div style="text-align: center; color: var(--text-dim); font-size: 0.8rem;">Threat Score Detected</div>
             </div>
 
             <!-- Panel 2: Verificación Global -->
             <div class="panel" id="panel-verdict">
                 <div class="panel-title">
                     <i data-lucide="globe"></i>
-                    Verificación Global
+                    Global Verification
                 </div>
                 <div style="text-align: center;">
                     <div id="threat-badge" class="threat-badge hidden">--</div>
                     <div id="threat-type" style="margin-top: 15px; font-weight: bold; color: var(--accent-cobalt);">
-                        ESPERANDO INPUT...</div>
+                        AWAITING INPUT...</div>
                 </div>
             </div>
 
@@ -59,10 +58,10 @@
             <div class="panel" id="panel-technical">
                 <div class="panel-title">
                     <i data-lucide="terminal"></i>
-                    Análisis Técnico
+                    Technical Analysis
                 </div>
                 <ul class="indicator-list" id="indicator-list">
-                    <li style="border: none;">Sistema listo para análisis técnico.</li>
+                    <li style="border: none;">System ready for technical auditing.</li>
                 </ul>
                 <div id="recommendation-text"
                     style="margin-top: 20px; font-size: 0.85rem; color: var(--accent-safe); border-top: 1px solid #30363d; padding-top: 10px;">
@@ -74,15 +73,15 @@
             <div class="panel" id="panel-logs">
                 <div class="panel-title">
                     <i data-lucide="database"></i>
-                    Bitácora de Incidentes
+                    Incident Log
                 </div>
                 <div style="max-height: 200px; overflow-y: auto;">
                     <table class="log-table">
                         <thead>
                             <tr>
-                                <th>FECHA</th>
-                                <th>VEREDICTO</th>
-                                <th>RIESGO</th>
+                                <th>DATE</th>
+                                <th>VERDICT</th>
+                                <th>RISK</th>
                             </tr>
                         </thead>
                         <tbody id="logs-body">
