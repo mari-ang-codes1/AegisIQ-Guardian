@@ -26,11 +26,13 @@ AegisIQ doesn't just "flag" threats; it **reasons** through them using a multi-s
 ## 🛠️ Technology Stack
 Built to win the **Reasoning Agents** challenge of the Microsoft Agents League:
 
--   **Intelligence Engine**: `gpt-5.4-nano-2` (Azure AI Foundry) — Optimized for multi-step logical reasoning.
+-   **Intelligence Engine**: `gpt-5.4-nano-2` (Azure AI Foundry) — Optimized for multi-step logical reasoning. (Compatible with gpt-4o or any standard Azure OpenAI deployment)
 -   **Inference Architecture**: Serverless API via **Azure AI Foundry / Global Discovery Endpoint**.
 -   **Backend**: Node.js Serverless Functions (Vercel) with Bearer Token secure authentication.
 -   **Frontend**: Premium SOC (Security Operations Center) Dashboard using Vanilla JS and CSS for maximum performance and zero-latency UX.
 -   **Security**: Fully anonymized configuration using environment variables for zero-disclosure deployments.
+
+Note on Live Demo: Due to regional Azure quota limitations in the hackathon environment, the Reasoning Engine is dynamically mapped. The architecture is fully compatible with any Azure-hosted GPT-4o+ deployment.
 
 ---
 
