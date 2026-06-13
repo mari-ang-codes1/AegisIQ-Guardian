@@ -8,9 +8,9 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Input vacío" });
     }
 
-    // Configuración basada en el nuevo Agente de Azure AI Foundry
-    const endpoint = "https://mariaariaslopez-2797-resource.services.ai.azure.com/openai/v1";
-    const deploymentName = "gpt-5.4-nano-2";
+    // Configuración basada en variables de entorno (Anonimizado)
+    const endpoint = process.env.AZURE_ENDPOINT || "https://REPLACE_WITH_YOUR_ENDPOINT.services.ai.azure.com/openai/v1";
+    const deploymentName = process.env.AZURE_DEPLOYMENT_ID || "gpt-5.4-nano-2";
     const url = `${endpoint}/chat/completions`;
 
     try {
