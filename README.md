@@ -13,13 +13,13 @@ Social Engineering remains the #1 threat vector worldwide because it bypasses te
 
 ---
 
-## 🧠 Core Intelligence: The 4 Pillars of Analysis
-AegisIQ doesn't just "flag" threats; it **reasons** through them using a multi-step analytical grid:
+## 🧠 Core Intelligence: The Multi-Agent Orchestration
+AegisIQ doesn't just "flag" threats; it **reasons** through them using a coordinated multi-agent pipeline:
 
-1.  **Cognitive Risk Index (Psychological Audit)**: Analyzes linguistic patterns for Urgency, Fear, Authority, or Scarcity exploitation.
-2.  **Global Verification**: Cross-references input against threat intelligence patterns to provide a surgical verdict (SAFE | SUSPICIOUS | MALICIOUS).
-3.  **Technical Forensic Trace**: Identifies homograph attacks, suspicious TLDs, and URL masking with technical rigor.
-4.  **Operational Log**: Maintains a persistent SOC "Incident Log" for incident response and threat historical mapping.
+1.  **Linguistic Auditor Agent**: Performs a psychological audit of linguistic patterns, detecting Urgency, Fear, Authority, or Scarcity exploitation.
+2.  **Technical Forensic Agent**: Conducts a technical forensic trace, identifying homograph attacks, suspicious TLDs, and URL masking with technical rigor.
+3.  **SOC Orchestrator Agent**: Consolidates findings from specialized agents, grounding the final verdict in organizational work patterns and security protocols.
+4.  **Incident Log Integration**: Maintains a persistent SOC "Incident Log" for incident response and threat historical mapping.
 
 ---
 
@@ -41,9 +41,14 @@ Note on Live Demo: Due to regional Azure quota limitations in the hackathon envi
 graph TD
     User((Security Operator)) -->|Input: URL/Email| UI[SOC Dashboard - Frontend]
     UI -->|Async POST| API[Vercel Serverless Function]
-    API -->|Auth: Bearer Token| AAF[Azure AI Foundry Hub]
-    AAF -->|Reasoning Engine| Model[gpt-5.4-nano-2 / Phi-4]
-    Model -->|Structured JSON| API
+    
+    subgraph "Reasoning Multi-Agent System"
+        API -->|Orchestrate| AG1[Linguistic Auditor Agent]
+        API -->|Orchestrate| AG2[Technical Forensic Agent]
+        API -->|Final Verdict| AG3[SOC Orchestrator Agent]
+    end
+    
+    AG3 -->|Structured JSON| API
     API -->|Sanitized Threat Intel| UI
     UI -->|Persist| DB[(Local DB - Incident Log)]
 ```

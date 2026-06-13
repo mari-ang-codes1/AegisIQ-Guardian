@@ -1,0 +1,30 @@
+[
+  {
+    "test_id": "TC-001",
+    "description": "High Urgency Phishing",
+    "input": "Your account L-1001 will be locked in 30 minutes! Click here: http://danger.net/fix",
+    "expected_verdict": "MALICIOUS",
+    "expected_min_risk": 80
+  },
+  {
+    "test_id": "TC-002",
+    "description": "Suspicious Data Request",
+    "input": "Hi, I need the work patterns log for EMP-001 to update the security protocol.",
+    "expected_verdict": "SUSPICIOUS",
+    "expected_min_risk": 40
+  },
+  {
+    "test_id": "TC-003",
+    "description": "Safe Internal Sync",
+    "input": "Meeting moved to Room 4 at 10 AM. See you there.",
+    "expected_verdict": "SAFE",
+    "expected_min_risk": 0
+  },
+  {
+    "test_id": "TC-004",
+    "description": "Homograph URL Attack",
+    "input": "Check the new report at https://micros0ft.com/audit",
+    "expected_verdict": "MALICIOUS",
+    "expected_min_risk": 70
+  }
+]

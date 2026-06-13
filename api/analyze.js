@@ -71,7 +71,16 @@ export default async function handler(req, res) {
             `Perform technical forensic audit on: ${emailContent}`
         );
 
-        // 3. SOC Orchestrator Agent (Final Verdict)
+        // 3. Global Intel Scout (Simulating Tool/MCP)
+        console.log("Invoking Global Intel Scout (Tool Simulation)...");
+        const globalIntel = await callAgent(
+            `Act as AegisIQ Global Intel Scout. 
+            Simulate an MCP (Model Context Protocol) tool call to external threat intelligence databases (VirusTotal, AlienVault, PhishTank).
+            Report if the identifiers or URLs in the content have been previously flagged in global databases.`,
+            `Cross-reference this content against global threat databases: ${emailContent}`
+        );
+
+        // 4. SOC Orchestrator Agent (Final Verdict)
         console.log("Invoking SOC Orchestrator Agent...");
         const finalResponse = await callAgent(
             `Act as AegisIQ SOC Orchestrator. 
@@ -84,12 +93,17 @@ export default async function handler(req, res) {
                 "verdict": "SAFE|SUSPICIOUS|MALICIOUS",
                 "threat_type": "string",
                 "psychological_intent": "Summary of linguistic audit",
-                "technical_indicators": ["Array of technical audit findings"],
-                "reasoning_steps": ["Step 1: Linguistic Audit: ...", "Step 2: Technical Audit: ..."],
+                "technical_indicators": ["Array of forensic and global indicators"],
+                "reasoning_steps": [
+                    "Step 1: Linguistic Audit: ...", 
+                    "Step 2: Technical Audit: ...",
+                    "Step 3: Global Intel Search (MCP Tool): ..."
+                ],
                 "recommendation": "string"
             }`,
             `Linguistic Findings: ${linguisticAnalysis}
              Technical Findings: ${technicalAnalysis}
+             Global Intel (MCP): ${globalIntel}
              Original Content: ${emailContent}`
         );
 
