@@ -33,21 +33,45 @@ body {
 }
 
 header {
-    text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--accent-cobalt);
+    padding-bottom: 15px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.main-logo {
+    height: 60px;
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(0, 163, 255, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.main-logo:hover {
+    transform: scale(1.05);
+}
+
+.title-container {
+    display: flex;
+    flex-direction: column;
 }
 
 header h1 {
-    font-size: 3rem;
-    letter-spacing: 8px;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
     color: var(--accent-cobalt);
     text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-    margin-bottom: 10px;
+    margin: 0;
 }
 
 header p {
     color: var(--text-dim);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    margin: 5px 0 0 0;
     text-transform: uppercase;
     letter-spacing: 4px;
 }
