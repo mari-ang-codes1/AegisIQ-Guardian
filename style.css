@@ -45,9 +45,9 @@ header {
 }
 
 .main-logo {
-    height: 60px;
+    height: 100px;
     width: auto;
-    filter: drop-shadow(0 0 10px rgba(0, 163, 255, 0.3));
+    filter: drop-shadow(0 0 15px rgba(0, 163, 255, 0.4));
     transition: transform 0.3s ease;
 }
 
@@ -61,19 +61,19 @@ header {
 }
 
 header h1 {
-    font-size: 1.8rem;
-    letter-spacing: 2px;
+    font-size: 3rem;
+    letter-spacing: 4px;
     color: var(--accent-cobalt);
-    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    text-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
     margin: 0;
 }
 
 header p {
     color: var(--text-dim);
-    font-size: 0.8rem;
-    margin: 5px 0 0 0;
+    font-size: 1rem;
+    margin: 8px 0 0 0;
     text-transform: uppercase;
-    letter-spacing: 4px;
+    letter-spacing: 6px;
 }
 
 /* SOC Search Bar */
