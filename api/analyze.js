@@ -4,8 +4,8 @@ export default async function handler(req, res) {
     }
 
     const { emailContent } = req.body;
-
-    // URL de Inferencia con el modelo Phi-4-reasoning
+    
+    // URL de Inferencia hacia el modelo desplegado
     const url = "https://mariaariaslopez-2797-resource.services.ai.azure.com/openai/deployments/Phi-4-reasoning/chat/completions?api-version=2024-02-15-preview";
 
     try {
@@ -17,36 +17,32 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 messages: [
-                    {
-                        role: "system",
-                        content: "Eres AegisIQ Core. Responde ÚNICAMENTE con un JSON puro que siga este esquema: {\"risk_score\": number, \"verdict\": string, \"threat_type\": string, \"psychological_intent\": string, \"technical_indicators\": [string], \"recommendation\": string}. NO incluyas markdown, NO incluyas explicaciones, NO incluyas texto antes o después del JSON."
-                    },
-                    { role: "user", content: emailContent }
-                ],
-                // Ajustes de rendimiento para evitar Timeout 504
-                temperature: 0.1,
-                max_tokens: 400,
-                frequency_penalty: 0,
-                presence_penalty: 0
+                    { 
+                        role: "user", 
+                        content: `Analiza este texto de seguridad y responde ÚNICAMENTE con un JSON puro que contenga los campos: risk_score, verdict, threat_type, psychological_intent, technical_indicators, recommendation. Texto a analizar: ${emailContent}` 
+                    }
+                ]
             })
         });
 
+        // Capturamos la respuesta como texto primero para diagnosticar
+        const rawResponse = await response.text();
+
         if (!response.ok) {
-            const errorData = await response.text();
-            console.error("Error de Azure:", errorData);
-            return res.status(response.status).json({ error: "AZURE_REJECTED", details: errorData });
+            console.error("Error detallado de Azure:", rawResponse);
+            return res.status(500).json({ error: "AZURE_ERROR", details: rawResponse });
         }
 
-        const data = await response.json();
+        const data = JSON.parse(rawResponse);
         const content = data.choices[0].message.content;
 
-        // Limpieza agresiva de cualquier cosa que no sea el JSON
+        // Limpieza de posibles bloques markdown
         const jsonString = content.replace(/```json/g, "").replace(/```/g, "").trim();
 
         res.status(200).json(JSON.parse(jsonString));
 
     } catch (error) {
-        console.error("Error en el handler:", error);
+        console.error("Error crítico en el backend:", error);
         res.status(500).json({ error: "INTERNAL_ERROR", details: error.message });
     }
 }
