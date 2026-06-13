@@ -48,7 +48,13 @@ graph TD
 
 ---
 
-## 🏆 Why AegisIQ Wins
+## 🧠 Microsoft IQ Integration
+
+AegisIQ utilizes Foundry IQ as the foundational intelligence layer. By connecting our agent to a curated, enterprise-grade knowledge base of security protocols, we enforce multi-step reasoning that prevents AI hallucinations, ensuring that every verdict (SAFE|SUSPICIOUS|MALICIOUS) is grounded in verifiable security standards.
+
+---
+
+## 🎯 Strategic Alignment
 According to the **Microsoft Agents League Judging Criteria**:
 
 -   **Accuracy & Relevance (20%)**: Uses a surgical system prompt tailored for high-accuracy threat auditing.
@@ -63,14 +69,14 @@ According to the **Microsoft Agents League Judging Criteria**:
 
 1. **Clone the Repo**
    ```bash
-   git clone https://github.com/[your-repo]/AegisIQ-Guardian
+   git clone https://github.com/mari-ang-codes1/AegisIQ-Guardian
    ```
 
 2. **Configure Environment Variables**
    Create a `.env` file or configure in Vercel:
    - `AZURE_API_KEY`: Your Azure AI Foundry Key.
    - `AZURE_ENDPOINT`: Your Global Inference Endpoint.
-   - `AZURE_DEPLOYMENT_ID`: `gpt-5.4-nano-2` (or your preferred reasoning model).
+   - `AZURE_DEPLOYMENT_ID`: `gpt-5.4-nano-2` (The designated Reasoning Engine for AegisIQ)..
 
 3. **Deploy**
    ```bash
@@ -79,8 +85,13 @@ According to the **Microsoft Agents League Judging Criteria**:
 
 ---
 
+## ⚠️ Disclaimer
+This project is a proof-of-concept designed for educational purposes during the Microsoft Agents League hackathon. No real sensitive, confidential, or PII (Personally Identifiable Information) data is used, stored, or processed by this application.
+
+---
+
 ## 👥 The Team
-- **Project Lead**: [Your Name/Handle]
+- **Project Lead**: Maria Angel Arias Lopez
 - **Special Thanks**: Microsoft AI Skills Fest & Global AI Community.
 
 ---
