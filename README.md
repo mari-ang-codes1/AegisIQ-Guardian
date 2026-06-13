@@ -59,11 +59,11 @@ AegisIQ utilizes Foundry IQ as the foundational intelligence layer. By connectin
 ## 🎯 Strategic Alignment
 According to the **Microsoft Agents League Judging Criteria**:
 
--   **Accuracy & Relevance (20%)**: Uses a surgical system prompt tailored for high-accuracy threat auditing.
--   **Reasoning & Multi-step Thinking (20%)**: Implements a dedicated analysis of both psychological intent and technical indicators.
--   **Creativity & Originality (15%)**: Reimagines threat detection as a "Cognitive Shield" rather than a simple blacklist.
--   **User Experience (15%)**: A professional SOC aesthetic with real-time "Scanning" feedback and a fluid grid system.
--   **Reliability & Safety (20%)**: Implements robust error trapping, JSON sanitization, and deterministic temperature controls (0.2).
+-   **Accuracy & Relevance**: Uses a surgical system prompt tailored for high-accuracy threat auditing.
+-   **Reasoning & Multi-step Thinking**: Implements a dedicated analysis of both psychological intent and technical indicators.
+-   **Creativity & Originality**: Reimagines threat detection as a "Cognitive Shield" rather than a simple blacklist.
+-   **User Experience**: A professional SOC aesthetic with real-time "Scanning" feedback and a fluid grid system.
+-   **Reliability & Safety**: Implements robust error trapping, JSON sanitization, and deterministic temperature controls (0.2).
 
 ---
 
