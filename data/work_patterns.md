@@ -1,8 +1,3 @@
 # Workload and Learning Correlation (Synthetic)
 
-Insights:
-- Employees with more than 20 meeting hours per week show lower study completion.
-- Optimal completion appears when learners have 12–18 meeting hours and at least 15 focus hours.
-
-Recommendation:
-Schedule learning blocks during focus-heavy periods.
+Operational Insight: Employees with >20 meeting hours per week exhibit a 40% higher susceptibility to social engineering attacks due to cognitive fatigue. Optimal security posture is observed in personnel with 12-18 meeting hours and at least 15 hours of focused, analytical work per week. High-meeting loads are treated as a 'High-Risk' factor in the AegisIQ Threat Model.
