@@ -9,15 +9,11 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Email content is required' });
     }
 
-    // Enterprise-grade Grounding (Simulated Foundry IQ logic)
-    // In a real scenario, this would query a vector database or an organizational whitelist
-    const trustedDomains = ["company.com", "partner-corp.net"];
-    const senderDomain = (emailContent.match(/@([a-zA-Z0-9.-]+)/) || [])[1];
-    const isWhitelisted = trustedDomains.includes(senderDomain);
-    const groundingContext = isWhitelisted ? "Trusted Internal/Partner Domain" : "External Untrusted Source";
+    // Dynamic URL construction for Azure AI Foundry
+    const url = `${process.env.AZURE_ENDPOINT.replace(/\/$/, "")}/openai/deployments/Phi-4-reasoning/chat/completions?api-version=2024-02-15-preview`;
 
     try {
-        const response = await fetch(process.env.AZURE_ENDPOINT, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -55,31 +51,31 @@ REGLAS DE ORO:
                         content: emailContent
                     }
                 ],
-                temperature: 0.2,
-                response_format: { type: "json_object" }
+                temperature: 0.2
             })
         });
 
         if (!response.ok) {
-            throw new Error(`Azure API error: ${response.statusText}`);
+            console.error(`Azure API Error Status: ${response.status}`);
+            const errorText = await response.text();
+            console.error(`Azure API Error Message: ${errorText}`);
+            throw new Error(`Azure API error: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
         const auditResult = JSON.parse(data.choices[0].message.content);
 
-        // Ensure consistency even if LLM slightly deviates
         res.status(200).json(auditResult);
     } catch (error) {
-        console.error('Audit Error:', error);
+        console.error('Detailed Audit Error:', error.message);
 
-        // Standardized Fallback JSON
-        res.status(200).json({
+        res.status(500).json({
             risk_score: 50,
             verdict: "SOSPECHOSO",
-            threat_type: "Error de Análisis (AI Offline)",
-            psychological_intent: "No se pudo determinar la psicología debido a un fallo técnico.",
-            technical_indicators: ["Servicio de IA no disponible"],
-            recommendation: "Por precaución, trate este contenido como sospechoso y contacte con soporte técnico."
+            threat_type: "Error Técnico de Conexión",
+            psychological_intent: "Análisis interrumpido por fallo en el motor IR.",
+            technical_indicators: [`Error de red o configuración: ${error.message}`],
+            recommendation: "Contacte con el administrador de SOC. Revise logs de Azure (Endpoint/Deployments)."
         });
     }
 }
