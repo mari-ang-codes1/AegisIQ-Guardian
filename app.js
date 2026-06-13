@@ -51,7 +51,7 @@ async function handleScan() {
 
     } catch (error) {
         console.error('SOC Error:', error);
-        alert(`❌ Error de Sistema: ${error.message}`);
+        alert(`❌ System Error: ${error.message}`);
     } finally {
         setScanningState(false);
     }

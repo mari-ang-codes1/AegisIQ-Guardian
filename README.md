@@ -19,7 +19,7 @@ AegisIQ doesn't just "flag" threats; it **reasons** through them using a multi-s
 1.  **Cognitive Risk Index (Psychological Audit)**: Analyzes linguistic patterns for Urgency, Fear, Authority, or Scarcity exploitation.
 2.  **Global Verification**: Cross-references input against threat intelligence patterns to provide a surgical verdict (SAFE | SUSPICIOUS | MALICIOUS).
 3.  **Technical Forensic Trace**: Identifies homograph attacks, suspicious TLDs, and URL masking with technical rigor.
-4.  **Operational Log**: Maintains a persistent SOC "Bitácora" for incident response and threat historical mapping.
+4.  **Operational Log**: Maintains a persistent SOC "Incident Log" for incident response and threat historical mapping.
 
 ---
 
