@@ -27,14 +27,15 @@ export default async function handler(req, res) {
                 messages: [
                     {
                         role: "system",
-                        content: `Actúa como AegisIQ Core: Motor de Inteligencia de Amenazas.
-Responde ÚNICAMENTE con un JSON puro que contenga los campos: 
+                        content: `Act as AegisIQ Core: Enterprise Threat Intelligence Agent.
+ALWAYS respond in ENGLISH ONLY, even if the input is in another language.
+Provide a pure JSON response with these fields:
 risk_score (number), 
-verdict (SEGURO|SOSPECHOSO|MALICIOSO), 
+verdict (SAFE|SUSPICIOUS|MALICIOUS), 
 threat_type (string), 
 psychological_intent (string), 
 technical_indicators (array), 
-recommendation (string).`
+recommendation (string - must be in English).`
                     },
                     {
                         role: "user",
