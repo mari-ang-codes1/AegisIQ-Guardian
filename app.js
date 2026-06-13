@@ -110,6 +110,16 @@ function updateUI(data) {
     }
 
     document.getElementById('recommendation-text').innerText = data.recommendation;
+
+    // 4. Reasoning Chain (New)
+    const reasoningList = document.getElementById('reasoning-list');
+    if (reasoningList && data.reasoning_steps) {
+        reasoningList.innerHTML = data.reasoning_steps.map((step, index) => `
+            <div class="reasoning-step" style="animation-delay: ${index * 0.2}s">
+                ${step}
+            </div>
+        `).join('');
+    }
 }
 
 function saveLog(data) {

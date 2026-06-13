@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: "Method not allowed" });
@@ -8,79 +11,99 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Input is empty" });
     }
 
-    // Configuration based on environment variables (Anonymized)
+    // Load grounding data
+    const dataDir = path.join(process.cwd(), 'data');
+    const systemProtocol = fs.readFileSync(path.join(dataDir, 'system_protocol.md'), 'utf-8');
+    const workPatterns = fs.readFileSync(path.join(dataDir, 'work_patterns.md'), 'utf-8');
+
     const endpoint = process.env.AZURE_ENDPOINT || "https://REPLACE_WITH_YOUR_ENDPOINT.services.ai.azure.com/openai/v1";
     const deploymentName = process.env.AZURE_DEPLOYMENT_ID || "gpt-5.4-nano-2";
     const url = `${endpoint}/chat/completions`;
 
-    try {
-        console.log(`Invoking AegisIQ Core via ${deploymentName}...`);
+    const commonParams = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.AZURE_API_KEY}`
+        }
+    };
 
+    async function callAgent(systemPrompt, userPrompt) {
         const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.AZURE_API_KEY}` // Using Bearer token per Python SDK pattern
-            },
+            ...commonParams,
             body: JSON.stringify({
                 model: deploymentName,
                 messages: [
-                    {
-                        role: "system",
-                        content: `Act as AegisIQ Core: Enterprise Threat Intelligence Agent.
-ALWAYS respond in ENGLISH ONLY, even if the input is in another language.
-Provide a pure JSON response with these fields:
-risk_score (number), 
-verdict (SAFE|SUSPICIOUS|MALICIOUS), 
-threat_type (string), 
-psychological_intent (string), 
-technical_indicators (array), 
-recommendation (string - must be in English).`
-                    },
-                    {
-                        role: "user",
-                        content: emailContent
-                    }
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt }
                 ],
                 temperature: 0.2
             })
         });
 
-        const responseText = await response.text();
-
         if (!response.ok) {
-            console.error("Azure Agent Error:", responseText);
-            return res.status(response.status).json({
-                error: "AGENT_FAILURE",
-                details: responseText
-            });
+            const errText = await response.text();
+            throw new Error(`Agent Call Failed: ${errText}`);
         }
 
-        const data = JSON.parse(responseText);
+        const data = await response.json();
+        return data.choices[0].message.content;
+    }
 
-        // Handle response structure (Chat Completion standard)
-        if (data.choices && data.choices[0] && data.choices[0].message) {
-            const content = data.choices[0].message.content;
-            const jsonString = content.replace(/```json/g, "").replace(/```/g, "").trim();
+    try {
+        console.log("--- MULTI-AGENT ORCHESTRATION START ---");
 
-            try {
-                const auditResult = JSON.parse(jsonString);
-                res.status(200).json(auditResult);
-            } catch (e) {
-                console.error("Failed to parse model-generated JSON:", jsonString);
-                res.status(500).json({ error: "INVALID_JSON_OUTPUT", content });
-            }
-        } else {
-            console.error("Unexpected Agent response:", data);
-            res.status(500).json({ error: "UNEXPECTED_RESPONSE_FORMAT", data });
-        }
+        // 1. Linguistic Auditor Agent
+        console.log("Invoking Linguistic Auditor Agent...");
+        const linguisticAnalysis = await callAgent(
+            `Act as AegisIQ Linguistic Auditor. 
+            Focus ONLY on psychological manipulation: Urgency, Fear, Authority, Scarcity, or Social Proof.
+            Explain the intent behind the language used.`,
+            `Analyze this content for psychological triggers: ${emailContent}`
+        );
+
+        // 2. Technical Forensic Agent
+        console.log("Invoking Technical Forensic Agent...");
+        const technicalAnalysis = await callAgent(
+            `Act as AegisIQ Technical Forensic Agent.
+            Analyze URLs, domains, and technical structures for anomalies like homographs, suspicious TLDs, or masking.
+            Ground your analysis in this protocol: ${systemProtocol}`,
+            `Perform technical forensic audit on: ${emailContent}`
+        );
+
+        // 3. SOC Orchestrator Agent (Final Verdict)
+        console.log("Invoking SOC Orchestrator Agent...");
+        const finalResponse = await callAgent(
+            `Act as AegisIQ SOC Orchestrator. 
+            Consolidate the findings from specialized agents and provide a formal security verdict.
+            Ground your decision in these work patterns: ${workPatterns}
+            
+            RESPOND ONLY IN JSON format:
+            {
+                "risk_score": (0-100),
+                "verdict": "SAFE|SUSPICIOUS|MALICIOUS",
+                "threat_type": "string",
+                "psychological_intent": "Summary of linguistic audit",
+                "technical_indicators": ["Array of technical audit findings"],
+                "reasoning_steps": ["Step 1: Linguistic Audit: ...", "Step 2: Technical Audit: ..."],
+                "recommendation": "string"
+            }`,
+            `Linguistic Findings: ${linguisticAnalysis}
+             Technical Findings: ${technicalAnalysis}
+             Original Content: ${emailContent}`
+        );
+
+        const jsonString = finalResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+        const auditResult = JSON.parse(jsonString);
+
+        console.log("--- ORCHESTRATION COMPLETE ---");
+        res.status(200).json(auditResult);
 
     } catch (error) {
-        console.error("CRITICAL_FAILURE in SOC backend:", error.message);
+        console.error("CRITICAL_ORCHESTRATION_FAILURE:", error.message);
         res.status(500).json({
-            error: "CRITICAL_FAILURE",
-            message: error.message,
-            recommendation: "Ensure AZURE_API_KEY is correct and the deployment name matches your Foundry portal."
+            error: "ORCHESTRATION_FAILURE",
+            message: error.message
         });
     }
 }

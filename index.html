@@ -31,7 +31,20 @@
 
         <!-- SOC Grid -->
         <div class="dashboard-grid">
-            <!-- Panel 1: Cognitive Risk -->
+            <!-- Panel 1: Reasoning Chain (New) -->
+            <div class="panel" id="panel-reasoning" style="grid-column: span 2;">
+                <div class="panel-title">
+                    <i data-lucide="list-checks"></i>
+                    Multi-Agent Reasoning Chain
+                </div>
+                <div id="reasoning-list" class="reasoning-list">
+                    <div style="color: var(--text-dim); font-size: 0.9rem;">
+                        Waiting for analysis initiation...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: Cognitive Risk -->
             <div class="panel" id="panel-risk">
                 <div class="panel-title">
                     <i data-lucide="brain"></i>
