@@ -2,7 +2,7 @@
 
 ## 📽️ Demo Video
 You can watch the full walk-through and execution of AegisIQ Core here:
-[Watch the Demo Video on YouTube](TU_ENLACE_AQUI)
+[Watch the Demo Video on YouTube] https://youtu.be/bI8adorh3F0?si=7nW0wq3qL4HG6TRG
 
 
 
